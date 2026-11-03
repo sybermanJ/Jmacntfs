@@ -36,9 +36,73 @@ pub fn resources() -> Option<PathBuf> {
     let path = contents.join("Resources");
     path.is_dir().then_some(path)
 }
+/// macOS version, read once per process (it cannot change without a restart).
+pub fn os_version() -> String {
+    static OS: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    OS.get_or_init(|| {
+        run("/usr/bin/sw_vers", &["-productVersion"])
+            .unwrap_or_default()
+            .trim()
+            .into()
+    })
+    .clone()
+}
+const RUNTIME_FILES: [&str; 7] = [
+    "VERSION",
+    "SHA256SUMS",
+    "bin/ntfs-3g",
+    "bin/ntfs-3g.probe",
+    "bin/ntfs-helper",
+    "lib/libfuse.2.dylib",
+    "MicroVM/SHA256SUMS",
+];
+/// Identity of every runtime file; any write, replace, chown or chmod changes it.
+fn runtime_fingerprint(root: &Path) -> Option<Vec<[i64; 6]>> {
+    use std::os::unix::fs::MetadataExt;
+    RUNTIME_FILES
+        .iter()
+        .map(|f| {
+            std::fs::symlink_metadata(root.join(f)).ok().map(|m| {
+                [
+                    m.dev() as i64,
+                    m.ino() as i64,
+                    m.size() as i64,
+                    m.mtime() * 1_000_000_000 + m.mtime_nsec(),
+                    m.ctime() * 1_000_000_000 + m.ctime_nsec(),
+                    m.mode() as i64 ^ ((m.uid() as i64) << 32),
+                ]
+            })
+        })
+        .collect()
+}
+/// Status display only. Ownership and permission checks run every time (they
+/// are cheap); the SHA-256 hashing of the runtime binaries is reused until a
+/// file's identity changes. The UI polls this every few seconds; mounting still
+/// runs the full `verify_runtime` check every time.
+fn runtime_status_cached(root: &Path) -> Result<()> {
+    // Only successful checks are cached, so a transient read error is retried.
+    static CACHE: std::sync::Mutex<Option<Vec<[i64; 6]>>> = std::sync::Mutex::new(None);
+    for file in RUNTIME_FILES {
+        crate::privileged::check_root_path(&root.join(file))?;
+    }
+    let Some(print) = runtime_fingerprint(root) else {
+        return crate::privileged::verify_payload(root);
+    };
+    if CACHE
+        .lock()
+        .is_ok_and(|cache| cache.as_ref() == Some(&print))
+    {
+        return Ok(());
+    }
+    let result = crate::privileged::verify_payload(root);
+    if let Ok(mut cache) = CACHE.lock() {
+        *cache = result.is_ok().then_some(print);
+    }
+    result
+}
 pub fn environment() -> Environment {
     let installed = std::fs::read_to_string(Path::new(RUNTIME).join("VERSION")).unwrap_or_default();
-    let check = crate::privileged::verify_runtime(Path::new(RUNTIME)).and_then(|_| {
+    let check = runtime_status_cached(Path::new(RUNTIME)).and_then(|_| {
         if installed.trim() == env!("CARGO_PKG_VERSION") {
             Ok(())
         } else {
@@ -61,10 +125,7 @@ pub fn environment() -> Environment {
         }),
         fuse: Path::new("/Library/Filesystems/macfuse.fs").is_dir(),
         fuse_version: version,
-        os: run("/usr/bin/sw_vers", &["-productVersion"])
-            .unwrap_or_default()
-            .trim()
-            .into(),
+        os: os_version(),
         runtime_issue: check.err().unwrap_or_default(),
         service: service.is_ok(),
         service_issue: service.err().unwrap_or_default(),
@@ -180,12 +241,12 @@ pub(crate) fn scan_physical() -> Result<Vec<Volume>> {
     Ok(volumes)
 }
 pub fn scan() -> Result<Vec<Volume>> {
+    scan_with(&crate::sessions::mount_table()?)
+}
+/// Same as `scan`, reusing a mount table the caller already read.
+pub fn scan_with(table: &[crate::sessions::MountEntry]) -> Result<Vec<Volume>> {
     let mut volumes = scan_physical()?;
-    crate::sessions::reconcile(
-        &mut volumes,
-        &crate::sessions::load()?,
-        &crate::sessions::mount_table()?,
-    );
+    crate::sessions::reconcile(&mut volumes, &crate::sessions::load()?, table);
     Ok(volumes)
 }
 fn fresh(v: &Volume) -> Result<Volume> {
@@ -206,7 +267,7 @@ pub fn mount(v: &Volume, backend: crate::settings::Backend) -> Result<String> {
     if v.writable && !v.mount.is_empty() {
         crate::sessions::validate_mounted_backend(
             &v,
-            backend.resolved(&run("/usr/bin/sw_vers", &["-productVersion"])?)?,
+            backend.resolved(&os_version())?,
             &crate::sessions::load()?,
         )?;
         return Ok("磁盘已经可以读写".into());

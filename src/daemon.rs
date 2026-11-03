@@ -349,11 +349,17 @@ fn start_disconnect_watch(lock: Arc<Mutex<()>>) {
             let Ok(_guard) = lock.try_lock() else {
                 continue;
             };
-            let Ok(ids) = crate::system::external_ids() else {
+            let Ok(sessions) = crate::sessions::load() else {
                 absent.clear();
                 continue;
             };
-            let Ok(sessions) = crate::sessions::load() else {
+            // Only MicroVM sessions are watched; skip running diskutil every two
+            // seconds when there are none (the common case in stable mode).
+            if !sessions.iter().any(|s| s.backend == "microvm") {
+                absent.clear();
+                continue;
+            }
+            let Ok(ids) = crate::system::external_ids() else {
                 absent.clear();
                 continue;
             };

@@ -58,6 +58,61 @@ pub struct Settings {
     pub theme: Theme,
     pub auto_mount: bool,
     pub language: String,
+    /// Whole-interface colour scheme id; empty means "derive from legacy `theme`".
+    pub scheme: String,
+    /// "system", "light" or "dark"; empty means "derive from legacy `theme`".
+    pub appearance: String,
+}
+pub const SCHEMES: [&str; 5] = ["xuan", "qingci", "dailan", "zhusha", "songyan"];
+pub const APPEARANCES: [&str; 3] = ["system", "light", "dark"];
+impl Settings {
+    /// Scheme and appearance actually in effect, migrating pre-0.4 `theme` values
+    /// the same way the frontend does.
+    pub fn look(&self) -> (&str, &str) {
+        let scheme = if SCHEMES.contains(&self.scheme.as_str()) {
+            self.scheme.as_str()
+        } else {
+            match self.theme {
+                Theme::Office => "dailan",
+                Theme::Graphite => "songyan",
+                Theme::Stone => "xuan",
+            }
+        };
+        let appearance = if APPEARANCES.contains(&self.appearance.as_str()) {
+            self.appearance.as_str()
+        } else if self.scheme.is_empty() && self.appearance.is_empty() {
+            match self.theme {
+                Theme::Graphite => "dark",
+                _ => "light",
+            }
+        } else {
+            "system"
+        };
+        (scheme, appearance)
+    }
+    pub fn validate_look(&self) -> Result<()> {
+        if !(self.scheme.is_empty() || SCHEMES.contains(&self.scheme.as_str()))
+            || !(self.appearance.is_empty() || APPEARANCES.contains(&self.appearance.as_str()))
+        {
+            return Err("Unsupported colour scheme".into());
+        }
+        Ok(())
+    }
+}
+/// Window background (page `--bg`) for a scheme, used for the native titlebar.
+pub fn scheme_background(scheme: &str, dark: bool) -> (u8, u8, u8) {
+    match (scheme, dark) {
+        ("qingci", false) => (0xEE, 0xF3, 0xEF),
+        ("qingci", true) => (0x14, 0x1C, 0x18),
+        ("dailan", false) => (0xEE, 0xF1, 0xF5),
+        ("dailan", true) => (0x12, 0x1A, 0x2A),
+        ("zhusha", false) => (0xF7, 0xEF, 0xEC),
+        ("zhusha", true) => (0x1C, 0x13, 0x12),
+        ("songyan", false) => (0xF1, 0xF1, 0xEF),
+        ("songyan", true) => (0x16, 0x16, 0x16),
+        (_, false) => (0xF8, 0xF4, 0xED),
+        (_, true) => (0x1A, 0x1A, 0x1A),
+    }
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -67,6 +122,8 @@ impl Default for Settings {
             theme: Theme::Stone,
             auto_mount: true,
             language: "auto".into(),
+            scheme: String::new(),
+            appearance: String::new(),
         }
     }
 }
@@ -155,6 +212,29 @@ mod tests {
                 serde_json::from_slice(&serde_json::to_vec(&settings).unwrap()).unwrap();
             assert_eq!(restored.theme, theme);
         }
+    }
+    #[test]
+    fn legacy_themes_map_to_schemes() {
+        let legacy = |theme| Settings {
+            theme,
+            ..Settings::default()
+        };
+        assert_eq!(legacy(Theme::Stone).look(), ("xuan", "light"));
+        assert_eq!(legacy(Theme::Office).look(), ("dailan", "light"));
+        assert_eq!(legacy(Theme::Graphite).look(), ("songyan", "dark"));
+        let chosen = Settings {
+            theme: Theme::Graphite,
+            scheme: "zhusha".into(),
+            appearance: "system".into(),
+            ..Settings::default()
+        };
+        assert_eq!(chosen.look(), ("zhusha", "system"));
+        assert!(chosen.validate_look().is_ok());
+        let bad = Settings {
+            scheme: "neon".into(),
+            ..Settings::default()
+        };
+        assert!(bad.validate_look().is_err());
     }
     #[test]
     fn selects_supported_backends() {
