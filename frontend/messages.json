@@ -1289,29 +1289,274 @@
     "ja" : "マイクロVM の操作に失敗しました。強制的な復旧や取り外しは行っていません。",
     "zh-Hant" : "微虛擬機操作失敗。未強制修復或卸載磁碟。"
   },
-  "桌面与访达入口": {
-    "en": "Desktop and Finder access",
-    "ja": "デスクトップと Finder への表示",
-    "zh-Hant": "桌面與 Finder 入口"
+  "桌面与访达入口" : {
+    "en" : "Desktop and Finder access",
+    "ja" : "デスクトップと Finder への表示",
+    "zh-Hant" : "桌面與 Finder 入口"
   },
-  "磁盘断开后的残留会话正在清理，请稍后重试": {
-    "en": "Cleaning up the disconnected session. Please try again shortly.",
-    "ja": "切断されたセッションを処理しています。しばらくしてから再試行してください。",
-    "zh-Hant": "正在清理磁碟斷開後的殘留工作階段，請稍後重試"
+  "磁盘断开后的残留会话正在清理，请稍后重试" : {
+    "en" : "Cleaning up the disconnected session. Please try again shortly.",
+    "ja" : "切断されたセッションを処理しています。しばらくしてから再試行してください。",
+    "zh-Hant" : "正在清理磁碟斷開後的殘留工作階段，請稍後重試"
   },
-  "磁盘意外断开，后台助手将正常清理残留挂载。未完成的写入可能丢失；重新连接后会再次检查磁盘状态。": {
-    "en": "Disk unexpectedly disconnected. The helper will attempt normal cleanup. Incomplete writes may be lost. The disk will be checked again after reconnection.",
-    "ja": "ディスクが予期せず切断されました。通常の後処理を試みます。未完了の書き込みが失われる可能性があります。再接続後に再確認します。",
-    "zh-Hant": "磁碟意外斷開，背景助手將正常清理殘留掛載。未完成的寫入可能遺失；重新連接後會再次檢查磁碟狀態。"
+  "磁盘意外断开，后台助手将正常清理残留挂载。未完成的写入可能丢失；重新连接后会再次检查磁盘状态。" : {
+    "en" : "Disk unexpectedly disconnected. The helper will attempt normal cleanup. Incomplete writes may be lost. The disk will be checked again after reconnection.",
+    "ja" : "ディスクが予期せず切断されました。通常の後処理を試みます。未完了の書き込みが失われる可能性があります。再接続後に再確認します。",
+    "zh-Hant" : "磁碟意外斷開，背景助手將正常清理殘留掛載。未完成的寫入可能遺失；重新連接後會再次檢查磁碟狀態。"
   },
-  "在访达设置的「通用」中勾选「已连接的服务器」，即可显示桌面卷入口。在访达打开磁盘后，选择「文件 → 添加到边栏」，即可用硬盘名称快速访问。": {
-    "en": "In Finder Settings → General, enable Connected servers to show the volume on your desktop. Open the disk in Finder and choose File → Add to Sidebar for quick access by name.",
-    "ja": "Finder の設定 → 一般で「接続中のサーバ」を有効にすると、デスクトップに表示されます。ディスクを開き「ファイル → サイドバーに追加」を選ぶと、名前でアクセスできます。",
-    "zh-Hant": "在 Finder 設定的「一般」中勾選「已連接的伺服器」，即可顯示桌面入口。開啟磁碟後選擇「檔案 → 加入側邊欄」，即可用硬碟名稱快速存取。"
+  "在访达设置的「通用」中勾选「已连接的服务器」，即可显示桌面卷入口。在访达打开磁盘后，选择「文件 → 添加到边栏」，即可用硬盘名称快速访问。" : {
+    "en" : "In Finder Settings → General, enable Connected servers to show the volume on your desktop. Open the disk in Finder and choose File → Add to Sidebar for quick access by name.",
+    "ja" : "Finder の設定 → 一般で「接続中のサーバ」を有効にすると、デスクトップに表示されます。ディスクを開き「ファイル → サイドバーに追加」を選ぶと、名前でアクセスできます。",
+    "zh-Hant" : "在 Finder 設定的「一般」中勾選「已連接的伺服器」，即可顯示桌面入口。開啟磁碟後選擇「檔案 → 加入側邊欄」，即可用硬碟名稱快速存取。"
   },
-  "拔盘前请使用 macntfs 的「安全推出」。异常断开后后台会尝试正常清理残留；无法保证未完成写入的数据完整，不会自动强行修复磁盘。": {
-    "en": "Use macntfs Safe eject before unplugging. After an unexpected disconnect, the helper attempts normal cleanup. Incomplete writes may be lost; automatic forced repair is never performed.",
-    "ja": "取り外す前に「安全に取り出す」を使用してください。予期しない切断後は通常の後処理を試みます。未完了の書き込みの完全性は保証できません。自動の強制修復は行いません。",
-    "zh-Hant": "拔除前請使用「安全退出」。異常斷開後背景會嘗試正常清理殘留；無法保證未完成寫入的資料完整，不會自動強制修復磁碟。"
+  "拔盘前请使用 macntfs 的「安全推出」。异常断开后后台会尝试正常清理残留；无法保证未完成写入的数据完整，不会自动强行修复磁盘。" : {
+    "en" : "Use macntfs Safe eject before unplugging. After an unexpected disconnect, the helper attempts normal cleanup. Incomplete writes may be lost; automatic forced repair is never performed.",
+    "ja" : "取り外す前に「安全に取り出す」を使用してください。予期しない切断後は通常の後処理を試みます。未完了の書き込みの完全性は保証できません。自動の強制修復は行いません。",
+    "zh-Hant" : "拔除前請使用「安全退出」。異常斷開後背景會嘗試正常清理殘留；無法保證未完成寫入的資料完整，不會自動強制修復磁碟。"
+  },
+  "Windows 是否开启了「快速启动」或处于休眠" : {
+    "en" : "Whether Windows Fast Startup or hibernation is on",
+    "ja" : "Windows の「高速スタートアップ」や休止状態が有効になっていないか",
+    "zh-Hant" : "Windows 是否開啟了「快速啟動」或處於休眠"
+  },
+  "macFUSE + NTFS-3G，速度最好，插入后自动开启读写。首次需要允许驱动，可能要重启。" : {
+    "en" : "macFUSE + NTFS-3G. Fastest, and turns on read/write when you plug in. The first time, you must allow the driver and may need to restart.",
+    "ja" : "macFUSE + NTFS-3G。最速で、接続時に自動で読み書きを有効にします。初回はドライバの許可が必要で、再起動が必要な場合があります。",
+    "zh-Hant" : "macFUSE + NTFS-3G，速度最好，插入後自動開啟讀寫。首次需要允許驅動，可能要重新啟動。"
+  },
+  "中性墨灰配古铜金，克制" : {
+    "en" : "Neutral ink grey with bronze gold, restrained",
+    "ja" : "ニュートラルな墨グレーに古銅色、控えめ",
+    "zh-Hant" : "中性墨灰配古銅金，克制"
+  },
+  "以实际挂载结果为准" : {
+    "en" : "Confirmed by an actual mount",
+    "ja" : "実際のマウント結果で確認されます",
+    "zh-Hant" : "以實際掛載結果為準"
+  },
+  "免内核模式 · 实验性" : {
+    "en" : "Kernel-free mode · experimental",
+    "ja" : "カーネル不要モード · 試験的",
+    "zh-Hant" : "免核心模式 · 實驗性"
+  },
+  "共" : {
+    "en" : "of",
+    "ja" : "合計",
+    "zh-Hant" : "共"
+  },
+  "关闭提示" : {
+    "en" : "Dismiss",
+    "ja" : "閉じる",
+    "zh-Hant" : "關閉提示"
+  },
+  "冷调青绿灰，清爽安静" : {
+    "en" : "Cool celadon grey-green, calm",
+    "ja" : "涼しげな青磁グレー、落ち着いた印象",
+    "zh-Hant" : "冷調青綠灰，清爽安靜"
+  },
+  "切换" : {
+    "en" : "Switch",
+    "ja" : "切り替え",
+    "zh-Hant" : "切換"
+  },
+  "切换到免内核模式（实验性）？" : {
+    "en" : "Switch to kernel-free mode (experimental)?",
+    "ja" : "カーネル不要モード（試験的）に切り替えますか？",
+    "zh-Hant" : "切換到免核心模式（實驗性）？"
+  },
+  "切换到稳定模式？" : {
+    "en" : "Switch to stable mode?",
+    "ja" : "安定モードに切り替えますか？",
+    "zh-Hant" : "切換到穩定模式？"
+  },
+  "取消" : {
+    "en" : "Cancel",
+    "ja" : "キャンセル",
+    "zh-Hant" : "取消"
+  },
+  "可用" : {
+    "en" : "free",
+    "ja" : "空き",
+    "zh-Hant" : "可用"
+  },
+  "复制" : {
+    "en" : "Copy",
+    "ja" : "コピー",
+    "zh-Hant" : "複製"
+  },
+  "外观" : {
+    "en" : "Appearance",
+    "ja" : "外観",
+    "zh-Hant" : "外觀"
+  },
+  "安全推出「{name}」所在的磁盘？" : {
+    "en" : "Safely eject the disk that contains “{name}”?",
+    "ja" : "「{name}」があるディスクを安全に取り出しますか？",
+    "zh-Hant" : "安全退出「{name}」所在的磁碟？"
+  },
+  "宣纸 · 苍筤" : {
+    "en" : "Xuan paper · Cangl green",
+    "ja" : "宣紙 · 蒼筤",
+    "zh-Hant" : "宣紙 · 蒼筤"
+  },
+  "已以只读方式挂载" : {
+    "en" : "Mounted read-only",
+    "ja" : "読み取り専用でマウントされました",
+    "zh-Hant" : "已以唯讀方式掛載"
+  },
+  "已复制" : {
+    "en" : "Copied",
+    "ja" : "コピーしました",
+    "zh-Hant" : "已複製"
+  },
+  "已完成" : {
+    "en" : "Done",
+    "ja" : "完了",
+    "zh-Hant" : "已完成"
+  },
+  "已成功挂载磁盘" : {
+    "en" : "A disk was mounted successfully",
+    "ja" : "ディスクのマウントに成功しました",
+    "zh-Hant" : "已成功掛載磁碟"
+  },
+  "已用" : {
+    "en" : "used",
+    "ja" : "使用済み",
+    "zh-Hant" : "已用"
+  },
+  "常见原因：Windows 开启了「快速启动」或处于休眠，或文件系统需要在 Windows 中检查。在 Windows 中完全关机（按住 Shift 点「关机」）后再连接。" : {
+    "en" : "Common causes: Windows Fast Startup or hibernation is on, or the file system needs checking in Windows. Shut Windows down fully (hold Shift and click Shut down), then reconnect.",
+    "ja" : "主な原因：Windows の高速スタートアップや休止状態が有効、またはファイルシステムを Windows で検査する必要があります。Windows を完全にシャットダウン（Shift を押しながら「シャットダウン」）してから再接続してください。",
+    "zh-Hant" : "常見原因：Windows 開啟了「快速啟動」或處於休眠，或檔案系統需要在 Windows 中檢查。在 Windows 中完全關機（按住 Shift 點「關機」）後再連接。"
+  },
+  "换一根数据线，或不经过扩展坞直接连接" : {
+    "en" : "Try another cable, or connect directly without a hub",
+    "ja" : "別のケーブルを試すか、ハブを使わず直接接続する",
+    "zh-Hant" : "換一根資料線，或不經過擴充塢直接連接"
+  },
+  "插入 NTFS 磁盘后自动检测。" : {
+    "en" : "NTFS disks are detected when you plug them in.",
+    "ja" : "NTFS ディスクは接続すると自動で検出されます。",
+    "zh-Hant" : "插入 NTFS 磁碟後自動偵測。"
+  },
+  "整个界面一起换色，每套都有浅色和深色。选择会自动保存。" : {
+    "en" : "Recolours the whole interface. Each scheme has a light and a dark palette. Your choice is saved automatically.",
+    "ja" : "インターフェース全体の配色を変更します。各配色にライトとダークがあります。選択は自動で保存されます。",
+    "zh-Hant" : "整個介面一起換色，每套都有淺色和深色。選擇會自動儲存。"
+  },
+  "暖白纸色，墨绿重点" : {
+    "en" : "Warm paper white with ink green",
+    "ja" : "温かな紙の白に墨緑のアクセント",
+    "zh-Hant" : "暖白紙色，墨綠重點"
+  },
+  "暖粉灰底配朱红，醒目" : {
+    "en" : "Warm rose grey with vermilion, bold",
+    "ja" : "温かなローズグレーに朱色、印象的",
+    "zh-Hant" : "暖粉灰底配朱紅，醒目"
+  },
+  "更新与关于" : {
+    "en" : "Updates & about",
+    "ja" : "アップデートと情報",
+    "zh-Hant" : "更新與關於"
+  },
+  "朱砂" : {
+    "en" : "Vermilion",
+    "ja" : "朱砂",
+    "zh-Hant" : "朱砂"
+  },
+  "松烟 · 苍黄" : {
+    "en" : "Pine ink · Bronze",
+    "ja" : "松煙 · 蒼黄",
+    "zh-Hant" : "松煙 · 蒼黃"
+  },
+  "浅色" : {
+    "en" : "Light",
+    "ja" : "ライト",
+    "zh-Hant" : "淺色"
+  },
+  "深色" : {
+    "en" : "Dark",
+    "ja" : "ダーク",
+    "zh-Hant" : "深色"
+  },
+  "看不到磁盘？请逐项检查：" : {
+    "en" : "Can't see your disk? Check:",
+    "ja" : "ディスクが表示されない場合は次を確認してください：",
+    "zh-Hant" : "看不到磁碟？請逐項檢查："
+  },
+  "磁盘是否为 NTFS 格式（exFAT、APFS 磁盘由 macOS 直接处理）" : {
+    "en" : "Whether the disk is NTFS (macOS handles exFAT and APFS disks itself)",
+    "ja" : "ディスクが NTFS 形式か（exFAT と APFS は macOS が直接扱います）",
+    "zh-Hant" : "磁碟是否為 NTFS 格式（exFAT、APFS 磁碟由 macOS 直接處理）"
+  },
+  "稳定模式 · macFUSE" : {
+    "en" : "Stable mode · macFUSE",
+    "ja" : "安定モード · macFUSE",
+    "zh-Hant" : "穩定模式 · macFUSE"
+  },
+  "网络卷（实验）" : {
+    "en" : "network volume (experimental)",
+    "ja" : "ネットワークボリューム（試験的）",
+    "zh-Hant" : "網路卷（實驗）"
+  },
+  "蓝灰底配靛蓝，接近系统原生" : {
+    "en" : "Blue grey with indigo, close to native macOS",
+    "ja" : "ブルーグレーに藍色、macOS 標準に近い",
+    "zh-Hant" : "藍灰底配靛藍，接近系統原生"
+  },
+  "设备详情" : {
+    "en" : "Device details",
+    "ja" : "デバイスの詳細",
+    "zh-Hant" : "裝置詳情"
+  },
+  "请先关闭正在使用这些分区的文件。推出完成后即可拔下磁盘。" : {
+    "en" : "Close any files open on these partitions first. Unplug the disk when ejecting finishes.",
+    "ja" : "先にこれらのパーティションで開いているファイルを閉じてください。取り出しが完了したらディスクを抜けます。",
+    "zh-Hant" : "請先關閉正在使用這些分割區的檔案。退出完成後即可拔下磁碟。"
+  },
+  "请手动选择并复制" : {
+    "en" : "Select and copy it manually",
+    "ja" : "手動で選択してコピーしてください",
+    "zh-Hant" : "請手動選擇並複製"
+  },
+  "读写模式与权限" : {
+    "en" : "Read/write mode & permissions",
+    "ja" : "読み書きモードと権限",
+    "zh-Hant" : "讀寫模式與權限"
+  },
+  "还有步骤未完成" : {
+    "en" : "Some steps are not finished",
+    "ja" : "未完了の手順があります",
+    "zh-Hant" : "還有步驟未完成"
+  },
+  "这块物理磁盘上的所有分区都会一起推出，包括非 NTFS 分区。" : {
+    "en" : "Every partition on this physical disk is ejected together, including non-NTFS partitions.",
+    "ja" : "この物理ディスク上のすべてのパーティション（NTFS 以外も含む）がまとめて取り出されます。",
+    "zh-Hant" : "這塊實體磁碟上的所有分割區都會一起退出，包括非 NTFS 分割區。"
+  },
+  "通用" : {
+    "en" : "General",
+    "ja" : "一般",
+    "zh-Hant" : "一般"
+  },
+  "配色方案" : {
+    "en" : "Colour scheme",
+    "ja" : "配色",
+    "zh-Hant" : "配色方案"
+  },
+  "重新尝试读写" : {
+    "en" : "Try read/write again",
+    "ja" : "読み書きを再試行",
+    "zh-Hant" : "重新嘗試讀寫"
+  },
+  "青瓷" : {
+    "en" : "Celadon",
+    "ja" : "青磁",
+    "zh-Hant" : "青瓷"
+  },
+  "黛蓝 · 靛青" : {
+    "en" : "Indigo",
+    "ja" : "黛藍 · 藍",
+    "zh-Hant" : "黛藍 · 靛青"
   }
 }

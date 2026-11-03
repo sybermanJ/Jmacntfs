@@ -1,5 +1,17 @@
 # macntfs【不好用就自己写系列之mac上的ntfs硬盘使用工具】
 
+## 截图
+
+界面使用整套「鉴色」配色方案（宣纸、青瓷、黛蓝、朱砂、松烟），每套都有浅色与深色，可跟随系统。截图由 `scripts/test-ui.cjs` 以模拟数据生成，不代表真实磁盘操作。
+
+| 我的磁盘 · 宣纸浅色 | 我的磁盘 · 青瓷深色 |
+| --- | --- |
+| ![](docs/screenshots/disks-light.png) | ![](docs/screenshots/disks-qingci-dark.png) |
+| 配色方案设置 | 首次使用向导（实时状态） |
+| ![](docs/screenshots/settings-qingci-dark.png) | ![](docs/screenshots/setup.png) |
+| 推出前确认同一磁盘的分区 | 菜单栏面板 |
+| ![](docs/screenshots/eject-confirm.png) | ![](docs/screenshots/panel.png) |
+
 ## 0.3.23 桌面入口与异常断开处理
 
 免内核模式通过本机 NFS 提供磁盘。在 Finder 设置 → 通用中勾选「已连接的服务器」可显示桌面入口；打开磁盘后选择「文件 → 添加到边栏」可按原硬盘名称快速访问。首次使用向导提供相应说明。NFS 卷的系统图标不保证与原生磁盘完全相同。

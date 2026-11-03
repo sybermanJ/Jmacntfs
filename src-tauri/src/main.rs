@@ -3,7 +3,7 @@ mod i18n;
 mod native_lifecycle;
 mod updates;
 use macntfs_core::{
-    settings::{Backend, Settings, Theme},
+    settings::{Backend, Settings},
     system,
 };
 use std::{
@@ -124,22 +124,22 @@ async fn diagnose() -> Result<macntfs_core::diagnostics::Report, String> {
 }
 #[derive(Default)]
 struct SettingsState(Mutex<()>);
-// Keep Cocoa title text and titlebar background aligned with the saved palette.
-fn apply_window_theme(app: &tauri::AppHandle, theme: Theme) -> tauri::Result<()> {
+// Keep Cocoa title text and titlebar background aligned with the saved colour scheme.
+fn apply_window_theme(app: &tauri::AppHandle, settings: &Settings) -> tauri::Result<()> {
     if let Some(window) = app.get_webview_window("main") {
-        let (appearance, color) = match theme {
-            Theme::Stone => (
-                tauri::Theme::Light,
-                tauri::window::Color(250, 250, 248, 255),
-            ),
-            Theme::Office => (
-                tauri::Theme::Light,
-                tauri::window::Color(248, 249, 250, 255),
-            ),
-            Theme::Graphite => (tauri::Theme::Dark, tauri::window::Color(32, 36, 38, 255)),
+        let (scheme, appearance) = settings.look();
+        let forced = match appearance {
+            "dark" => Some(tauri::Theme::Dark),
+            "light" => Some(tauri::Theme::Light),
+            _ => None,
         };
-        window.set_theme(Some(appearance))?;
-        window.set_background_color(Some(color))?;
+        window.set_theme(forced)?;
+        let dark = match forced {
+            Some(theme) => theme == tauri::Theme::Dark,
+            None => window.theme()? == tauri::Theme::Dark,
+        };
+        let (r, g, b) = macntfs_core::settings::scheme_background(scheme, dark);
+        window.set_background_color(Some(tauri::window::Color(r, g, b, 255)))?;
     }
     Ok(())
 }
@@ -150,6 +150,7 @@ fn save_settings(app: tauri::AppHandle, settings: Settings) -> Result<(), String
     if !["auto", "zh-Hans", "zh-Hant", "en", "ja"].contains(&settings.language.as_str()) {
         return Err("Unsupported language".into());
     }
+    settings.validate_look()?;
     let monitor = app.state::<Mutex<Monitor>>();
     let monitor = monitor.lock().map_err(|e| e.to_string())?;
     let previous = Settings::load();
@@ -171,9 +172,9 @@ fn save_settings(app: tauri::AppHandle, settings: Settings) -> Result<(), String
     settings.save()?;
     drop(monitor);
     let handle = app.clone();
-    let theme = settings.theme;
+    let saved = settings.clone();
     app.run_on_main_thread(move || {
-        let _ = apply_window_theme(&handle, theme);
+        let _ = apply_window_theme(&handle, &saved);
     })
     .map_err(|e| e.to_string())?;
     let _ = app.emit("devices-changed", ());
@@ -568,7 +569,7 @@ fn main() {
         .setup(|app| {
             let handle = app.handle();
             native_lifecycle::install(handle.clone())?;
-            apply_window_theme(handle, Settings::load().theme)?;
+            apply_window_theme(handle, &Settings::load())?;
             updates::restore(handle);
             let updater_app = handle.clone();
             std::thread::spawn(move || {
@@ -629,6 +630,9 @@ fn main() {
                 if let Ok(mut last) = window.app_handle().state::<PanelState>().last_blur.lock() {
                     *last = Some(Instant::now());
                 }
+            }
+            if window.label() == "main" && matches!(event, tauri::WindowEvent::ThemeChanged(_)) {
+                let _ = apply_window_theme(window.app_handle(), &Settings::load());
             }
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
