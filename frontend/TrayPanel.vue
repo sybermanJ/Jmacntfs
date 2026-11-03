@@ -4,7 +4,7 @@ import {ref,onMounted,onUnmounted,computed} from 'vue';
 import {invoke} from '@tauri-apps/api/core';
 import {listen} from '@tauri-apps/api/event';
 import {FolderOpen,LogOut,HardDrive,ShieldCheck,Power,ArrowUpRight,Settings,RefreshCw} from 'lucide-vue-next';
-import driveImage from './assets/drive.png';
+import driveImage from './assets/drive-ui.png';
 import {applyTheme, migrate} from './theme';
 const state=ref(null),working=ref(false),failure=ref('');
 const locked=computed(()=>working.value||state.value?.monitor.busy);
@@ -13,9 +13,10 @@ async function refresh(){try{state.value=await invoke('snapshot');const look=mig
 async function act(action,volume){if(locked.value)return;working.value=true;failure.value='';try{await invoke('operate',{action,volume,backend:state.value.settings.backend})}catch(e){failure.value=String(e)}finally{working.value=false;await refresh()}}
 async function toggle(){if(!state.value)return;try{await invoke('set_auto_mount',{enabled:!state.value.settings.auto_mount});await refresh()}catch(e){failure.value=String(e)}}
 async function windowAction(action){try{await invoke('panel_action',{action})}catch(e){failure.value=String(e)}}
+function onVisible(){if(!document.hidden)refresh()}
 function escape(e){if(e.key==='Escape')windowAction('hide')}
-onMounted(async()=>{await refresh();stopDevices=await listen('devices-changed',refresh);stopResult=await listen('operation-result',()=>{failure.value='';refresh()});timer=setInterval(refresh,3000);window.addEventListener('keydown',escape)});
-onUnmounted(()=>{clearInterval(timer);stopDevices?.();stopResult?.();window.removeEventListener('keydown',escape)});
+onMounted(async()=>{await refresh();stopDevices=await listen('devices-changed',refresh);stopResult=await listen('operation-result',()=>{failure.value='';refresh()});timer=setInterval(()=>{if(!document.hidden&&!working.value)refresh()},3000);document.addEventListener('visibilitychange',onVisible);window.addEventListener('keydown',escape)});
+onUnmounted(()=>{clearInterval(timer);stopDevices?.();stopResult?.();window.removeEventListener('keydown',escape);document.removeEventListener('visibilitychange',onVisible)});
 </script>
 <template>
 <div class="tray-panel shell" >

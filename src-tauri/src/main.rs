@@ -36,13 +36,12 @@ struct Snapshot {
 #[tauri::command]
 async fn snapshot(app: tauri::AppHandle) -> Result<Snapshot, String> {
     tauri::async_runtime::spawn_blocking(move || {
+        // One mount-table read serves both the blocker count and the volume list.
+        let table = macntfs_core::sessions::mount_table()?;
         Ok(Snapshot {
             required_update: updates::required(&app),
-            update_blockers: macntfs_core::sessions::managed_mounts(
-                &macntfs_core::sessions::mount_table()?,
-            )
-            .len(),
-            volumes: system::scan()?,
+            update_blockers: macntfs_core::sessions::managed_mounts(&table).len(),
+            volumes: system::scan_with(&table)?,
             environment: system::environment(),
             settings: Settings::load(),
             version: env!("CARGO_PKG_VERSION"),
@@ -158,7 +157,7 @@ fn save_settings(app: tauri::AppHandle, settings: Settings) -> Result<(), String
         macntfs_core::settings::validate_backend_change(
             previous.backend,
             settings.backend,
-            &system::run("/usr/bin/sw_vers", &["-productVersion"])?,
+            &system::os_version(),
             monitor.busy,
             !macntfs_core::sessions::managed_mounts(&macntfs_core::sessions::mount_table()?)
                 .is_empty(),
@@ -521,8 +520,13 @@ fn start_monitor(app: tauri::AppHandle) {
                     .lock()
                     .map(|m| m.clone())
                     .unwrap_or_default();
+                // Free space changes constantly while files are copied. Leave it out
+                // so a copy doesn't rebuild the tray menu and refresh every window
+                // every two seconds; the windows' own polling shows it.
+                let mut stable = monitor.clone();
+                stable.volumes.iter_mut().for_each(|v| v.free = 0);
                 let key = serde_json::to_string(&(
-                    &monitor,
+                    &stable,
                     ready,
                     settings.auto_mount,
                     &settings.language,

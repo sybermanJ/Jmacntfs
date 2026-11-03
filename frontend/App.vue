@@ -6,7 +6,7 @@ import {invoke} from '@tauri-apps/api/core';
 import {listen} from '@tauri-apps/api/event';
 import SetupGuide from './SetupGuide.vue';
 import Diagnostics from './Diagnostics.vue';
-import driveImage from './assets/drive.png';
+import driveImage from './assets/drive-ui.png';
 import {applyTheme, migrate, SCHEME_LIST, swatch, resolvedMode} from './theme';
 import {setupSteps} from './setup';
 import {HardDrive, RefreshCw, ArrowUpRight, ShieldCheck, ListChecks, Settings, Download, FolderOpen, LogOut, CheckCircle2, X, ChevronRight} from 'lucide-vue-next';
@@ -76,6 +76,7 @@ function askBackend(next) {
   dialog.value = {title: vm ? tr('切换到免内核模式（实验性）？') : tr('切换到稳定模式？'), lines: [vm ? tr('磁盘以网络卷显示。Word 直接编辑及大量文件复制存在兼容性限制，重要文件建议先复制到 Mac 再编辑。每个分区的虚拟机内存上限为 512 MiB。') : tr('一个应用，两种读写方式。免内核模式无需驱动授权；稳定模式需要 macFUSE。'), tr('请先安全推出所有受管理磁盘，再切换读写模式。重新连接后使用所选模式，不会自动回退。')], list: blockers.value.map(v => v.name || v.id), hint: blockers.value.length ? tr('磁盘仍在挂载，模式切换暂不可用。请在「我的磁盘」安全推出后再选择。') : '', ok: tr('切换'), disabled: blockers.value.length > 0, run: () => { backend.value = next; save(); }};
 }
 function confirmDialog() { const d = dialog.value; dialog.value = null; d?.run(); }
+function onVisible() { if (!document.hidden && !busy.value) refresh(); }
 function onKey(e) { if (e.key === 'Escape' && dialog.value) dialog.value = null; }
 watch(dialog, async d => { if (d) { await nextTick(); document.querySelector('.dialog .primary:not(:disabled), .dialog .secondary')?.focus(); } });
 
@@ -88,9 +89,11 @@ onMounted(async () => {
   unlisteners.push(await listen('operation-result', event => { show(event.payload.message, event.payload.error); refresh(); }));
   unlisteners.push(await listen('update-progress', event => { const {received, total} = event.payload; progress.value = total ? Math.round(received / total * 100) : 0; }));
   updates(true);
-  timer = setInterval(() => { if (!busy.value) refresh(); }, 8000);
+  // Poll only while the window is on screen; device events still refresh it when hidden.
+  timer = setInterval(() => { if (!busy.value && !document.hidden) refresh(); }, 8000);
+  document.addEventListener('visibilitychange', onVisible);
 });
-onUnmounted(() => { clearInterval(timer); clearTimeout(noticeTimer); window.removeEventListener('keydown', onKey); unlisteners.forEach(u => u?.()); });
+onUnmounted(() => { clearInterval(timer); clearTimeout(noticeTimer); window.removeEventListener('keydown', onKey); document.removeEventListener('visibilitychange', onVisible); unlisteners.forEach(u => u?.()); });
 
 const tabs = [{id: 'general', label: '通用'}, {id: 'mode', label: '读写模式与权限'}, {id: 'diagnostics', label: '运行诊断'}, {id: 'updates', label: '更新与关于'}];
 const languages = [{id: 'auto', label: '跟随系统'}, {id: 'zh-Hans', label: '简体中文'}, {id: 'zh-Hant', label: '繁體中文'}, {id: 'en', label: 'English'}, {id: 'ja', label: '日本語'}];

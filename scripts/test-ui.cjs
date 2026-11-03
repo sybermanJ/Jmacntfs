@@ -25,7 +25,7 @@ const DEFAULT_VOLUMES = [
       transformCallback(cb) { const id = ++serial; callbacks.set(id, cb); return id; },
       unregisterCallback(id) { callbacks.delete(id); },
       invoke: async (cmd, args) => {
-        if (cmd === 'snapshot') return {version: '0.4.0', required_update: JSON.parse(localStorage.getItem('qa-required') || 'null'), update_blockers: Number(localStorage.getItem('qa-blockers') || 0), volumes: JSON.parse(localStorage.getItem('qa-volumes') || 'null') || volumes, settings, environment: env(), monitor: {busy: !!localStorage.getItem('qa-busy'), last_event: localStorage.getItem('qa-event') || '', last_error: ''}};
+        if (cmd === 'snapshot') { window.__QA_SNAPSHOTS = (window.__QA_SNAPSHOTS || 0) + 1; } if (cmd === 'snapshot') return {version: '0.4.0', required_update: JSON.parse(localStorage.getItem('qa-required') || 'null'), update_blockers: Number(localStorage.getItem('qa-blockers') || 0), volumes: JSON.parse(localStorage.getItem('qa-volumes') || 'null') || volumes, settings, environment: env(), monitor: {busy: !!localStorage.getItem('qa-busy'), last_event: localStorage.getItem('qa-event') || '', last_error: ''}};
         if (cmd === 'diagnose') return {schema: 1, version: 'test', backend: settings.backend, checks: [{code: 'helper', title: '后台助手', status: 'pass', detail: '已验证助手连接与版本', action: ''}, {code: 'permission', title: '磁盘访问权限', status: 'unknown', detail: '助手连接不能证明磁盘访问权限；连接磁盘并尝试挂载后确认', action: 'permissions'}], volumes: [{index: 1, mounted: true, writable: true}]};
         if (cmd === 'set_auto_mount') { settings.auto_mount = args.enabled; localStorage.setItem('qa-settings', JSON.stringify(settings)); return null; }
         if (cmd === 'save_settings') { settings = args.settings; localStorage.setItem('qa-settings', JSON.stringify(settings)); return null; }
@@ -168,6 +168,12 @@ const DEFAULT_VOLUMES = [
   await page.keyboard.press('Escape');
   if ((await page.evaluate(() => window.__QA_WINDOW)).join(',') !== 'show,hide') throw Error('panel navigation incorrect');
   await page.screenshot({path: `${SHOTS}/panel.png`, omitBackground: true});
+  // A hidden panel must not keep polling the helper.
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', {configurable: true, get: () => true}); window.__QA_SNAPSHOTS = 0; });
+  await page.waitForTimeout(3500);
+  if (await page.evaluate(() => window.__QA_SNAPSHOTS) !== 0) throw Error('hidden panel kept polling');
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', {configurable: true, get: () => false}); document.dispatchEvent(new Event('visibilitychange')); });
+  await page.waitForFunction(() => window.__QA_SNAPSHOTS > 0);
 
   // Languages.
   await page.setViewportSize({width: 1060, height: 760});
@@ -201,6 +207,6 @@ const DEFAULT_VOLUMES = [
   const resolved = await page.evaluate(async () => { const {resolveLanguage} = await import('/i18n.js'); return ['zh-CN', 'zh-TW', 'zh-HK', 'ja-JP', 'en-US', 'fr-FR'].map(l => resolveLanguage('auto', l)); });
   if (resolved.join(',') !== 'zh-Hans,zh-Hant,zh-Hant,ja,en,en') throw Error('system language mapping incorrect');
   if (errors.length) throw Error(errors.join('\n'));
-  console.log('PASS: scheme migration/switch/persist/follow-system; disk cards, eject confirm, per-disk busy, auto-dismiss; mode confirm and block; diagnostics; setup auto-open; widths; tray panel; four languages; required update; no page errors');
+  console.log('PASS: scheme migration/switch/persist/follow-system; disk cards, eject confirm, per-disk busy, auto-dismiss; mode confirm and block; diagnostics; setup auto-open; widths; tray panel incl. no polling while hidden; four languages; required update; no page errors');
   await browser.close();
 })().catch(e => { console.error(e); process.exit(1); });
